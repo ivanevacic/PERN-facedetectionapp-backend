@@ -1,12 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
+const cors = require('cors');
 
 
 //  Create app buy running express
 const app = express();
 
+//  Middleware
 app.use(bodyParser.json());
+app.use(cors());
 
 //  Mock DB varible
 const database = {
