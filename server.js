@@ -59,6 +59,42 @@ app.post('/register', (req, res) => {
   res.json(database.users[database.users.length-1]);
 })
 
+app.put('/image', (req, res) => {
+  const { id } = req.body;
+  //  let -> because it's reassigned
+  let found = false;
+  database.users.forEach(user => {
+    //  If user is found
+    if(user.id === id)  {
+      found = true;
+      //  If user submits image,his entries count increases
+      user.entries++;
+      return res.json(user.entries);
+    } 
+  })
+  //  Needs to be like this,if not,only 'sees' first user,not all of them
+  if(!found) {
+    res.status(400).json('Not found');
+  }
+})
+
+app.get('/profile/:id', (req, res) => {
+  const { id } = req.params;
+  //  let -> because it's reassigned
+  let found = false;
+  database.users.forEach(user => {
+    //  If user is found
+    if(user.id === id)  {
+      found = true;
+      return res.json(user);
+    } 
+  })
+  //  Needs to be like this,if not,only 'sees' first user,not all of them
+  if(!found) {
+    res.status(400).json('Not found');
+  }
+})
+
 app.listen(3000, () => {
   console.log('App is running on port 3000');
 })
@@ -69,7 +105,7 @@ app.listen(3000, () => {
 '/' => res=this is working
 '/signin' => POST request,respond with success or fail  /FINISHED
 '/register' => POST request,returns new user object   /FINISHED
-'/profile/:userId' => GET request,return user
-'/image' => PUT,user exists there is an update on user profile,return updated info
+'/profile/:userId' => GET request,return user /FINISHED
+'/image' => PUT,user exists there is an update on user profile,return updated info  /FINISHED
 
 */
