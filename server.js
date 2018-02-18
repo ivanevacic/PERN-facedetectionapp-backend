@@ -1,7 +1,11 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+
 
 //  Create app buy running express
 const app = express();
+
+app.use(bodyParser.json());
 
 //  Mock DB varible
 const database = {
@@ -28,12 +32,31 @@ const database = {
 }
 
 app.get('/', (req, res)=>{
-  res.send('this is working');
+  res.json(database.users);
 })
 
 app.post('/signin', (req, res) => {
-  //  We get json string
-  res.json('signin route works');
+  if(req.body.email === database.users[0].email &&
+     req.body.password === database.users[0].password) {
+      res.json('success');
+    } else {
+      res.status(400).json('error logging in');
+    }
+})
+
+app.post('/register', (req, res) => {
+  //  Using destructuring to grab values from req.body
+  const { email, name, password } = req.body;
+  database.users.push({
+      id: '45632',
+      name: name,
+      email: email,
+      password: password,
+      entries: 0,
+      joined: new Date()   
+  })
+  //  Grabs the last user in array(last one added)
+  res.json(database.users[database.users.length-1]);
 })
 
 app.listen(3000, () => {
@@ -44,8 +67,8 @@ app.listen(3000, () => {
   TASKS
 --------------------------
 '/' => res=this is working
-'/signin' => POST request,respond with success or fail
-'/register' => POST request,returns new user object
+'/signin' => POST request,respond with success or fail  /FINISHED
+'/register' => POST request,returns new user object   /FINISHED
 '/profile/:userId' => GET request,return user
 '/image' => PUT,user exists there is an update on user profile,return updated info
 
