@@ -2,6 +2,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+//  Require knex.js 
+const knex = require('knex')
+
+//  Initialize knex.js,URL:'http://knexjs.org/'
+knex({
+  client: 'pg', //  PostgreSQL
+  connection: {
+    host: '127.0.0.1',  //  localhost
+    user: 'postgres',
+    password: '',
+    database: 'facedetectionapp'
+  }
+});
 
 
 //  Create app buy running express
