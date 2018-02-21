@@ -6,18 +6,20 @@ const cors = require('cors');
 const knex = require('knex')
 
 //  Initialize knex.js,URL:'http://knexjs.org/'
-const postgreSQL = knex({
+const db = knex({
   client: 'pg', //  PostgreSQL
   connection: {
     host: '127.0.0.1',  //  localhost
     user: 'postgres',
-    password: '',
+    password: 'ivanevacic',
     database: 'facedetectionapp'
   }
 });
 
 //  Test query
-console.log(postgreSQL.select('*').from('users'));
+db.select('*').from('users').then(data => {
+  console.log(data);
+});
 
 
 //  Create app buy running express
@@ -68,13 +70,12 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
   //  Using destructuring to grab values from req.body
   const { email, name, password } = req.body;
-  database.users.push({
-      id: '45632',
-      name: name,
-      email: email,
-      entries: 0,
-      joined: new Date()   
-  })
+  //  Put form-register data into our DB
+  db('users').insert({
+    email: email,
+    name: name,
+    joined: new Date()
+  }).then(console.log);
   //  Grabs the last user in array(last one added)
   res.json(database.users[database.users.length-1]);
 })
