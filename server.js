@@ -6,7 +6,7 @@ const cors = require('cors');
 const knex = require('knex')
 
 //  Initialize knex.js,URL:'http://knexjs.org/'
-knex({
+const postgreSQL = knex({
   client: 'pg', //  PostgreSQL
   connection: {
     host: '127.0.0.1',  //  localhost
@@ -15,6 +15,9 @@ knex({
     database: 'facedetectionapp'
   }
 });
+
+//  Test query
+console.log(postgreSQL.select('*').from('users'));
 
 
 //  Create app buy running express
