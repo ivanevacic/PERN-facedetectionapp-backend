@@ -109,32 +109,17 @@ app.put('/image', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
   const { id } = req.params;
-  //  let -> because it's reassigned
-  let found = false;
-  database.users.forEach(user => {
-    //  If user is found
-    if(user.id === id)  {
-      found = true;
-      return res.json(user);
-    } 
+  db.select('*').from('users').where({id})  //  Short for id: id
+    .then(user => {
+    if(user.length) { //  If user exists
+      res.json(user[0])
+    } else  {
+      res.status(400).json('Not found!')
+    }    
   })
-  //  Needs to be like this,if not,only 'sees' first user,not all of them
-  if(!found) {
-    res.status(400).json('Not found');
-  }
+  .catch(err => res.status(400).json('Error getting user'))
 })
 
 app.listen(3000, () => {
   console.log('App is running on port 3000');
 })
-
-/*
-  TASKS
---------------------------
-'/' => res=this is working
-'/signin' => POST request,respond with success or fail  /FINISHED
-'/register' => POST request,returns new user object   /FINISHED
-'/profile/:userId' => GET request,return user /FINISHED
-'/image' => PUT,user exists there is an update on user profile,return updated info  /FINISHED
-
-*/
