@@ -71,13 +71,21 @@ app.post('/register', (req, res) => {
   //  Using destructuring to grab values from req.body
   const { email, name, password } = req.body;
   //  Put form-register data into our DB
-  db('users').insert({
+  db('users')
+  //  Built-in knex.js function(returns all users in table)
+  .returning('*')
+  .insert({
     email: email,
     name: name,
     joined: new Date()
-  }).then(console.log);
-  //  Grabs the last user in array(last one added)
-  res.json(database.users[database.users.length-1]);
+  })
+  //  Send promise to frontend
+    .then(user => {
+      //  Return first user(when we register user,there should only be one)
+      res.json(user[0]);
+    })
+    //  Error handling
+    .catch(err => res.status(400).json('Unable to register'));
 })
 
 app.put('/image', (req, res) => {
