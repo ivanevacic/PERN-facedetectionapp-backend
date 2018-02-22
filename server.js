@@ -90,21 +90,13 @@ app.post('/register', (req, res) => {
 
 app.put('/image', (req, res) => {
   const { id } = req.body;
-  //  let -> because it's reassigned
-  let found = false;
-  database.users.forEach(user => {
-    //  If user is found
-    if(user.id === id)  {
-      found = true;
-      //  If user submits image,his entries count increases
-      user.entries++;
-      return res.json(user.entries);
-    } 
-  })
-  //  Needs to be like this,if not,only 'sees' first user,not all of them
-  if(!found) {
-    res.status(400).json('Not found');
-  }
+  db('users').where('id', '=', id)
+    .increment('entries', 1)  //  Increment 
+    .returning('entries')
+    .then(entries => {
+      res.json(entries[0]);
+    })
+    .catch(err => res.status(400).json('Unable to get entries'));
 })
 
 app.get('/profile/:id', (req, res) => {
