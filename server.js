@@ -28,13 +28,30 @@ app.get('/', (req, res)=>{
 })
 
 app.post('/signin', (req, res) => {
-  if(req.body.email === database.users[0].email &&
-     req.body.password === database.users[0].password) {
-      //res.json('success');
-      res.json(database.users[0]);
-    } else {
-      res.status(400).json('error logging in');
-    }
+  db.select('email', 'hash').from('login')  //  Select email and hash values from login table
+    .where('email', '=', req.body.email)  // Validation
+    .then(data => {
+        //  Array because we get array returned(only one,so index is zero)
+          //  Test only
+            //console.log(data[0]);
+      //  We get returned hash from 'login' table in DB,therefor the line below
+      const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
+      if(isValid) {
+        //  Return because we either want to show res.json(user[0]) or catch the error
+        return db.select('*').from('users')
+          .where('email', '=', req.body.email)
+          .then(user => {
+            res.json(user[0])
+          })
+          //  Error handling
+          .catch(err => res.status(400).json('Unable to get user1'))
+      } else { 
+        //  Email is correct,password is wrong
+        res.status(400).json('Wrong credentials2');
+      }
+    })
+    //  If email and password are both wrong
+    .catch(err => res.status(400).json('Wrong credentials3'));
 })
 
 app.post('/register', (req, res) => {
@@ -60,12 +77,13 @@ app.post('/register', (req, res) => {
           })
           //  Send promise to frontend
             .then(user => {
-              //  Return first user(when we register user,there should only be one)
+              //  Array because we get array returned(only one,so index is zero)
               res.json(user[0]);
             })
       })
       //  If all of this passes,commit to DB
       .then(trx.commit)
+      //  If something doesn't pass we rollback changes
       .catch(trx.rollback)
     })  
     //  Error handling
@@ -78,6 +96,7 @@ app.put('/image', (req, res) => {
     .increment('entries', 1)  //  Increment 
     .returning('entries')
     .then(entries => {
+      //  Array because we get array returned(only one,so index is zero)
       res.json(entries[0]);
     })
     .catch(err => res.status(400).json('Unable to get entries'));
@@ -88,6 +107,7 @@ app.get('/profile/:id', (req, res) => {
   db.select('*').from('users').where({id})  //  Short for id: id
     .then(user => {
     if(user.length) { //  If user exists
+      //  Array because we get array returned(only one,so index is zero)
       res.json(user[0])
     } else  {
       res.status(400).json('Not found!')
