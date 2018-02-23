@@ -16,42 +16,12 @@ const db = knex({
   }
 });
 
-//  Test query
-db.select('*').from('users').then(data => {
-  console.log(data);
-});
-
-
 //  Create app buy running express
 const app = express();
 
 //  Middleware
 app.use(bodyParser.json());
 app.use(cors());
-
-//  Mock DB varible
-const database = {
-  users: [
-    {
-      id: '123',
-      name: 'Ivan',
-      email: 'ivanevacicweb@gmail.com',
-      password: 'cookies',
-      //  How many times user submitted photo
-      entries: 0,
-      //  Date when user joined
-      joined: new Date()
-    },
-    {
-      id: '456',
-      name: 'Marko',
-      email: 'marko1@gmail.com',
-      password: 'bananas',
-      entries: 1,
-      joined: new Date()
-    }
-  ]
-}
 
 app.get('/', (req, res)=>{
   res.json(database.users);
@@ -70,20 +40,34 @@ app.post('/signin', (req, res) => {
 app.post('/register', (req, res) => {
   //  Using destructuring to grab values from req.body
   const { email, name, password } = req.body;
-  //  Put form-register data into our DB
-  db('users')
-  //  Built-in knex.js function(returns all users in table)
-  .returning('*')
-  .insert({
-    email: email,
-    name: name,
-    joined: new Date()
-  })
-  //  Send promise to frontend
-    .then(user => {
-      //  Return first user(when we register user,there should only be one)
-      res.json(user[0]);
-    })
+  const hash = bcrypt.hashSync(password);
+    //  Use transaction when we have to do more than 1 thing
+    db.transaction(trx => {
+      trx.insert({
+        hash: hash,
+        email: email
+      })
+      .into('login')
+      .returning('email')
+      .then(loginEmail => {
+        return trx('users')
+          //  Built-in knex.js function(returns all users in table)
+          .returning('*')
+          .insert({
+            email: loginEmail[0],
+            name: name,
+            joined: new Date()
+          })
+          //  Send promise to frontend
+            .then(user => {
+              //  Return first user(when we register user,there should only be one)
+              res.json(user[0]);
+            })
+      })
+      //  If all of this passes,commit to DB
+      .then(trx.commit)
+      .catch(trx.rollback)
+    })  
     //  Error handling
     .catch(err => res.status(400).json('Unable to register'));
 })
