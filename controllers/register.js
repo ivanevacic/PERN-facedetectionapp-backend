@@ -1,6 +1,12 @@
 const handleRegister = (req, res, db, bcrypt) => {
     //  Using destructuring to grab values from req.body
     const { email, name, password } = req.body;
+
+    //  Validation(if empty)
+    if(!email || !name || !password) {
+      //  'return' because if either of those values are false the function stops
+      return res.status(400).json('Incorrect form submission');
+    }
     const hash = bcrypt.hashSync(password);
       //  Use transaction when we have to do more than 1 thing
       db.transaction(trx => {

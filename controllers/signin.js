@@ -1,6 +1,11 @@
 const handleSignIn = (req, res, db, bcrypt) => {
+  // Destructuring so our code is cleaner
+  const {email, password} = req.body;
+  if(!email || !password) {
+    return res.status(400).json('Incorrect form submission');
+  }
     db.select('email', 'hash').from('login')  //  Select email and hash values from login table
-      .where('email', '=', req.body.email)  // Validation
+      .where('email', '=', email)  // Validation
       .then(data => {
           //  Array because we get array returned(only one,so index is zero)
             //  Test only
@@ -10,7 +15,7 @@ const handleSignIn = (req, res, db, bcrypt) => {
         if(isValid) {
           //  Return because we either want to show res.json(user[0]) or catch the error
           return db.select('*').from('users')
-            .where('email', '=', req.body.email)
+            .where('email', '=', email)
             .then(user => {
               res.json(user[0])
             })
