@@ -15,7 +15,7 @@ const image = require('./controllers/image');
 const db = knex({
   client: 'pg', //  PostgreSQL
   connection: {
-    host: '127.0.0.1',  //  localhost
+    host: 'postgresql-trapezoidal-15591',  //  Heroku PostgreSQL host
     user: 'postgres',
     password: 'ivanevacic',
     database: 'facedetectionapp'
