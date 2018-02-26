@@ -16,7 +16,7 @@ const db = knex({
   //  https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-node-js
   client: 'pg', //  PostgreSQL
   connection: {
-    connectionString: 'process.env.DATABASE_URL',  //  Heroku PostgreSQL host
+    connectionString: process.env.DATABASE_URL,  //  Heroku PostgreSQL host
     ssl: true,
   }
 });
