@@ -13,12 +13,11 @@ const image = require('./controllers/image');
 
 //  Initialize knex.js,URL:'http://knexjs.org/'
 const db = knex({
+  //  https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-node-js
   client: 'pg', //  PostgreSQL
   connection: {
-    host: 'postgresql-trapezoidal-15591',  //  Heroku PostgreSQL host
-    user: 'postgres',
-    password: 'ivanevacic',
-    database: 'facedetectionapp'
+    host: 'process.env.DATABASE_URL',  //  Heroku PostgreSQL host
+    ssl: true,
   }
 });
 
