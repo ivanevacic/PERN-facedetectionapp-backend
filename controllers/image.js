@@ -3,7 +3,8 @@ const Clarifai = require('clarifai');
 
 //  Clarifai API key 
 const app = new Clarifai.App({
-  'apiKey': 'e505bb6a9fbe4e65886915c57181243d'
+  //  Api Key is stored in env variable in heroku so It's not exposed here
+  'apiKey': process.env.API_CLARIFAI
 });
 
 const handleAPICall = (req, res) => {
