@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 
-app.get('/', (req, res) => { res.send(database.users) })
+app.get('/', (req, res) => { res.send('it is working') })
 
 
 //  Dependency injection(we inject dependencies this handle.Register and other functions need)
